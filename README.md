@@ -1,0 +1,1 @@
+https://grafana.com/grafana/plugins/simpod-json-datasource/
