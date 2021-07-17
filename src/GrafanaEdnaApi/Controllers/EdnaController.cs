@@ -5,6 +5,7 @@ using GrafanaEdnaApi.Models.Tags;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,12 @@ namespace GrafanaEdnaApi.Controllers
     [ApiController]
     public class EdnaController : ControllerBase
     {
+        private readonly EdnaFetcher _ednaFetcher;
+        public EdnaController(EdnaFetcher ednaFetcher)
+        {
+            _ednaFetcher = ednaFetcher;
+        }
+
         [HttpGet]
         public IActionResult Get() => Ok();
 
@@ -25,7 +32,11 @@ namespace GrafanaEdnaApi.Controllers
             List<TargetResponse> dataResponse = new();
             foreach (QueryTarget trgt in query.Targets)
             {
-                var measData = EdnaFetcher.FetchRandomHistData(query.Range.From, query.Range.To, (int)Math.Round(query.IntervalMs * 0.001));
+                string samplingType = trgt.Target;
+                JObject dataObj = (JObject)trgt.ExtraData;
+                int samplingPeriod = (int)(dataObj["period"] ?? 60);
+                string pnt = (string)dataObj["pnt"];
+                var measData = _ednaFetcher.FetchHistData(pnt, query.Range.From, query.Range.To, samplingType, samplingPeriod);
                 dataResponse.Add(new TargetResponse(trgt.Target, measData));
             }
             var jsonResult = JsonConvert.SerializeObject(dataResponse);
@@ -35,7 +46,7 @@ namespace GrafanaEdnaApi.Controllers
         [HttpPost("search")]
         public IActionResult Search()
         {
-            return Ok(new List<string>() { "raw", "snap", "average", "max", "min", "interpolated" });
+            return Ok(new List<string>() { "raw", "snap", "average", "max", "min" });
         }
 
         //[HttpPost("tag-keys")]

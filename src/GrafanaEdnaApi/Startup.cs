@@ -1,3 +1,4 @@
+using EdnaUtils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -23,11 +24,12 @@ namespace GrafanaEdnaApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<EdnaFetcher>();
             services.AddControllers().AddNewtonsoftJson(ops =>
             {
                 ops.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
             });
-            
+
             services.AddRazorPages();
         }
 

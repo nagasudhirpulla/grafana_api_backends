@@ -1,22 +1,81 @@
 ﻿using System;
 using System.Collections.Generic;
 using InStep.eDNA.EzDNAApiNet;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace EdnaUtils
 {
     public class EdnaFetcher
     {
-        public static List<List<double>> FetchRandomHistData(DateTime startTime, DateTime endTime, int freqSec)
+        private static readonly DateTime Epoch = new(1970, 1, 1, 0, 0, 0, 0);
+        private readonly ILogger<EdnaFetcher> _logger;
+        private readonly bool _useRandom;
+
+        public EdnaFetcher(ILogger<EdnaFetcher> logger, IConfiguration configuration)
+        {
+            _logger = logger;
+            _useRandom = configuration.GetValue<bool>("UseRandom");
+        }
+
+        private List<List<double>> FetchRandomHistData(DateTime startTime, DateTime endTime, int samplingPeriod)
         {
             List<List<double>> reslt = new();
             DateTime curTime = startTime;
-            int resFreq = (freqSec > 0) ? freqSec : 60;
+            int resFreq = (samplingPeriod > 0) ? samplingPeriod : 60;
             Random rand = new();
-            DateTime epoch = new(1970, 1, 1, 0, 0, 0, 0);
             while (curTime <= endTime)
             {
                 curTime += TimeSpan.FromSeconds(resFreq);
-                reslt.Add(new List<double>() { rand.Next(50, 100), curTime.Subtract(epoch).TotalMilliseconds });
+                reslt.Add(new List<double>() { rand.Next(50, 100), curTime.Subtract(Epoch).TotalMilliseconds });
+            }
+            return reslt;
+        }
+
+        public List<List<double>> FetchHistData(string pnt, DateTime startTime, DateTime endTime, string type, int samplingPeriod)
+        {
+            if (_useRandom)
+            {
+                return FetchRandomHistData(startTime, endTime, samplingPeriod);
+            }
+
+            List<List<double>> reslt = new();
+            if (pnt == null)
+            {
+                return reslt;
+            }
+            int resFreq = (samplingPeriod > 0) ? samplingPeriod : 60;
+            try
+            {
+                uint s = 0;
+                double dval = 0;
+                DateTime timestamp = DateTime.Now;
+                string status = "";
+                TimeSpan period = TimeSpan.FromSeconds(resFreq);
+                int nret = 0;
+                if (type == "raw")
+                { nret = History.DnaGetHistRaw(pnt, startTime, endTime, out s); }
+                else if (type == "snap")
+                { nret = History.DnaGetHistSnap(pnt, startTime, endTime, period, out s); }
+                else if (type == "average")
+                { nret = History.DnaGetHistAvg(pnt, startTime, endTime, period, out s); }
+                else if (type == "min")
+                { nret = History.DnaGetHistMin(pnt, startTime, endTime, period, out s); }
+                else if (type == "max")
+                { nret = History.DnaGetHistMax(pnt, startTime, endTime, period, out s); }
+
+                while (nret == 0)
+                {
+                    nret = History.DnaGetNextHist(s, out dval, out timestamp, out status);
+                    if (status != null)
+                    {
+                        reslt.Add(new List<double> { dval, timestamp.Subtract(Epoch).TotalMilliseconds });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error while fetching history results " + ex.Message);
             }
             return reslt;
         }
