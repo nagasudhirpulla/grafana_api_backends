@@ -19,5 +19,8 @@ dotnet run --urls=http://localhost:5001/
 {
   "Urls": "http://localhost:5001"
 }
-
 ```
+
+### Swagger integration
+* Official docs - https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-5.0&tabs=visual-studio
+* swagger ui available at ```/swagger``` path of the web application
