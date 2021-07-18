@@ -33,7 +33,11 @@ namespace GrafanaEdnaApi.Controllers
             foreach (QueryTarget trgt in query.Targets)
             {
                 string samplingType = trgt.Target;
-                JObject dataObj = (JObject)trgt.ExtraData;
+                JObject dataObj = new();
+                if (trgt.ExtraData != null)
+                {
+                    dataObj = (JObject)trgt.ExtraData;
+                }
                 int samplingPeriod = (int)(dataObj["period"] ?? 60);
                 string pnt = (string)dataObj["pnt"];
                 var measData = _ednaFetcher.FetchHistData(pnt, query.Range.From, query.Range.To, samplingType, samplingPeriod);

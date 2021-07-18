@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace GrafanaEdnaApi.Models.Query
 {
@@ -7,16 +8,12 @@ namespace GrafanaEdnaApi.Models.Query
     [JsonObject(IsReference = false)]
     public class QueryDateTimeRange
     {
-        public QueryDateTimeRange(DateTime from, DateTime to)
-        {
-            From = from;
-            To = to;
-        }
-
+        [Required]
         [JsonProperty("from")]
-        public DateTime From { get; }
+        public DateTime From { get; set; }
 
+        [Required]
         [JsonProperty("to")]
-        public DateTime To { get; }
+        public DateTime To { get; set; }
     }
 }
