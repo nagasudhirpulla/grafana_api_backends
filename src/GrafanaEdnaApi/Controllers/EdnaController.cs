@@ -40,8 +40,9 @@ namespace GrafanaEdnaApi.Controllers
                 }
                 int samplingPeriod = (int)(dataObj["period"] ?? 60);
                 string pnt = (string)dataObj["pnt"];
+                string pntName = (string)(dataObj["name"] ?? pnt ?? trgt.Target);
                 var measData = _ednaFetcher.FetchHistData(pnt, query.Range.From, query.Range.To, samplingType, samplingPeriod);
-                dataResponse.Add(new TargetResponse(trgt.Target, measData));
+                dataResponse.Add(new TargetResponse(pntName, measData));
             }
             var jsonResult = JsonConvert.SerializeObject(dataResponse);
             return Ok(jsonResult);
