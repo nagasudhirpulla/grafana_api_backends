@@ -18,7 +18,7 @@ namespace EdnaUtils
             _useRandom = configuration.GetValue<bool>("UseRandom");
         }
 
-        private List<List<double>> FetchRandomHistData(DateTime startTime, DateTime endTime, int samplingPeriod)
+        private static List<List<double>> FetchRandomHistData(DateTime startTime, DateTime endTime, int samplingPeriod)
         {
             List<List<double>> reslt = new();
             DateTime curTime = startTime;
@@ -26,8 +26,8 @@ namespace EdnaUtils
             Random rand = new();
             while (curTime <= endTime)
             {
-                curTime += TimeSpan.FromSeconds(resFreq);
                 reslt.Add(new List<double>() { rand.Next(50, 100), curTime.Subtract(Epoch).TotalMilliseconds });
+                curTime += TimeSpan.FromSeconds(resFreq);
             }
             return reslt;
         }
@@ -45,6 +45,9 @@ namespace EdnaUtils
                 return reslt;
             }
             int resFreq = (samplingPeriod > 0) ? samplingPeriod : 60;
+            // start and end times are in universal time, hence convert to local time if required
+            DateTime localStartTime = startTime.ToLocalTime();
+            DateTime localEndTime = endTime.ToLocalTime();
             try
             {
                 uint s = 0;
@@ -54,22 +57,22 @@ namespace EdnaUtils
                 TimeSpan period = TimeSpan.FromSeconds(resFreq);
                 int nret = 0;
                 if (type == "raw")
-                { nret = History.DnaGetHistRaw(pnt, startTime, endTime, out s); }
+                { nret = History.DnaGetHistRaw(pnt, localStartTime, localEndTime, out s); }
                 else if (type == "snap")
-                { nret = History.DnaGetHistSnap(pnt, startTime, endTime, period, out s); }
+                { nret = History.DnaGetHistSnap(pnt, localStartTime, localEndTime, period, out s); }
                 else if (type == "average")
-                { nret = History.DnaGetHistAvg(pnt, startTime, endTime, period, out s); }
+                { nret = History.DnaGetHistAvg(pnt, localStartTime, localEndTime, period, out s); }
                 else if (type == "min")
-                { nret = History.DnaGetHistMin(pnt, startTime, endTime, period, out s); }
+                { nret = History.DnaGetHistMin(pnt, localStartTime, localEndTime, period, out s); }
                 else if (type == "max")
-                { nret = History.DnaGetHistMax(pnt, startTime, endTime, period, out s); }
+                { nret = History.DnaGetHistMax(pnt, localStartTime, localEndTime, period, out s); }
 
                 while (nret == 0)
                 {
                     nret = History.DnaGetNextHist(s, out dval, out timestamp, out status);
                     if (status != null)
                     {
-                        reslt.Add(new List<double> { dval, timestamp.Subtract(Epoch).TotalMilliseconds });
+                        reslt.Add(new List<double> { dval, timestamp.ToUniversalTime().Subtract(Epoch).TotalMilliseconds });
                     }
                 }
             }
