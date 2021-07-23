@@ -32,7 +32,7 @@ namespace EdnaUtils
             return reslt;
         }
 
-        public List<List<double>> FetchHistData(string pnt, DateTime startTime, DateTime endTime, string type, int samplingPeriod)
+        public List<List<double>> FetchHistData(string pnt, DateTime startTime, DateTime endTime, string type, int samplingPeriod, TimeSpan fetchShift)
         {
             if (_useRandom)
             {
@@ -46,8 +46,8 @@ namespace EdnaUtils
             }
             int resFreq = (samplingPeriod > 0) ? samplingPeriod : 60;
             // start and end times are in universal time, hence convert to local time if required
-            DateTime localStartTime = startTime.ToLocalTime();
-            DateTime localEndTime = endTime.ToLocalTime();
+            DateTime localStartTime = (startTime + fetchShift).ToLocalTime();
+            DateTime localEndTime = (endTime + fetchShift).ToLocalTime();
             try
             {
                 uint s = 0;
@@ -72,7 +72,7 @@ namespace EdnaUtils
                     nret = History.DnaGetNextHist(s, out dval, out timestamp, out status);
                     if (status != null)
                     {
-                        DateTime gmtTs = timestamp.ToUniversalTime();
+                        DateTime gmtTs = (timestamp - fetchShift).ToUniversalTime();
                         if (gmtTs > Epoch)
                         {
                             reslt.Add(new List<double> { dval, gmtTs.Subtract(Epoch).TotalMilliseconds });

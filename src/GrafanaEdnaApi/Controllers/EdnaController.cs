@@ -29,22 +29,44 @@ namespace GrafanaEdnaApi.Controllers
         [HttpPost("query")]
         public IActionResult Query([FromBody] QueryRequest query)
         {
+            // initialise response
             List<TargetResponse> dataResponse = new();
+
+            // iterate through each series for data fetch
             foreach (QueryTarget trgt in query.Targets)
             {
                 string samplingType = trgt.Target;
+                
+                // derive extra data object
                 JObject dataObj = new();
                 if (trgt.ExtraData != null)
                 {
                     dataObj = (JObject)trgt.ExtraData;
                 }
+                
+                // derive the sampling period
                 int samplingPeriod = (int)(dataObj["period"] ?? 60);
+                
+                // derive the measurement id
                 string pnt = (string)dataObj["pnt"];
+                
+                // derive series name
                 string pntName = (string)(dataObj["name"] ?? pnt ?? trgt.Target);
-                var measData = _ednaFetcher.FetchHistData(pnt, query.Range.From, query.Range.To, samplingType, samplingPeriod);
+                
+                // derive fetch shift
+                TimeSpan fetchShift = new(days: (int)(dataObj["fetchShiftDays"] ?? 0), hours: (int)(dataObj["fetchShiftHrs"] ?? 0), minutes: (int)(dataObj["fetchShiftMins"] ?? 0), seconds: (int)(dataObj["fetchShiftSecs"] ?? 0));
+                
+                // fetch data
+                var measData = _ednaFetcher.FetchHistData(pnt, query.Range.From, query.Range.To, samplingType, samplingPeriod, fetchShift);
+                
+                // add data to response
                 dataResponse.Add(new TargetResponse(pntName, measData));
             }
+
+            // create the json response string
             var jsonResult = JsonConvert.SerializeObject(dataResponse);
+
+            // return the response with 200 status header
             return Ok(jsonResult);
         }
 
