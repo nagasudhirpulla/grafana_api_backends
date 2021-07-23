@@ -18,13 +18,18 @@ namespace EdnaUtils
             _useRandom = configuration.GetValue<bool>("UseRandom");
         }
 
-        private static List<List<double>> FetchRandomHistData(DateTime startTime, DateTime endTime, int samplingPeriod)
+        private static List<List<double>> FetchRandomHistData(DateTime startTime, DateTime endTime, int samplingPeriod, bool isFetchFuture)
         {
             List<List<double>> reslt = new();
             DateTime curTime = startTime;
             int resFreq = (samplingPeriod > 0) ? samplingPeriod : 60;
             Random rand = new();
-            while (curTime <= endTime)
+            DateTime targetEndTime = endTime;
+            if (!isFetchFuture && targetEndTime > DateTime.UtcNow)
+            {
+                targetEndTime = DateTime.UtcNow;
+            }
+            while (curTime <= targetEndTime)
             {
                 reslt.Add(new List<double>() { rand.Next(50, 100), curTime.Subtract(Epoch).TotalMilliseconds });
                 curTime += TimeSpan.FromSeconds(resFreq);
@@ -32,11 +37,11 @@ namespace EdnaUtils
             return reslt;
         }
 
-        public List<List<double>> FetchHistData(string pnt, DateTime startTime, DateTime endTime, string type, int samplingPeriod, TimeSpan fetchShift)
+        public List<List<double>> FetchHistData(string pnt, DateTime startTime, DateTime endTime, string type, int samplingPeriod, TimeSpan fetchShift, bool isFetchFuture)
         {
             if (_useRandom)
             {
-                return FetchRandomHistData(startTime, endTime, samplingPeriod);
+                return FetchRandomHistData(startTime, endTime, samplingPeriod, isFetchFuture);
             }
 
             List<List<double>> reslt = new();
@@ -48,6 +53,10 @@ namespace EdnaUtils
             // start and end times are in universal time, hence convert to local time if required
             DateTime localStartTime = (startTime + fetchShift).ToLocalTime();
             DateTime localEndTime = (endTime + fetchShift).ToLocalTime();
+            if (!isFetchFuture)
+            {
+                localEndTime = DateTime.Now;
+            }
             try
             {
                 uint s = 0;

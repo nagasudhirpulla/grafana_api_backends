@@ -38,26 +38,16 @@ namespace GrafanaEdnaApi.Controllers
                 string samplingType = trgt.Target;
                 
                 // derive extra data object
-                JObject dataObj = new();
-                if (trgt.ExtraData != null)
-                {
-                    dataObj = (JObject)trgt.ExtraData;
-                }
-                
-                // derive the sampling period
-                int samplingPeriod = (int)(dataObj["period"] ?? 60);
-                
-                // derive the measurement id
-                string pnt = (string)dataObj["pnt"];
+                var dataObj = trgt.ExtraData;
                 
                 // derive series name
-                string pntName = (string)(dataObj["name"] ?? pnt ?? trgt.Target);
+                string pntName = dataObj.PntName ?? dataObj.Pnt ?? trgt.Target;
                 
                 // derive fetch shift
-                TimeSpan fetchShift = new(days: (int)(dataObj["fetchShiftDays"] ?? 0), hours: (int)(dataObj["fetchShiftHrs"] ?? 0), minutes: (int)(dataObj["fetchShiftMins"] ?? 0), seconds: (int)(dataObj["fetchShiftSecs"] ?? 0));
+                TimeSpan fetchShift = new(days: dataObj.FetchShiftDays, hours: dataObj.FetchShiftHrs, minutes: dataObj.FetchShiftMins, seconds: dataObj.FetchShiftSecs);
                 
                 // fetch data
-                var measData = _ednaFetcher.FetchHistData(pnt, query.Range.From, query.Range.To, samplingType, samplingPeriod, fetchShift);
+                var measData = _ednaFetcher.FetchHistData(dataObj.Pnt, query.Range.From, query.Range.To, samplingType, dataObj.SamplingPeriod, fetchShift, dataObj.FetchFuture);
                 
                 // add data to response
                 dataResponse.Add(new TargetResponse(pntName, measData));

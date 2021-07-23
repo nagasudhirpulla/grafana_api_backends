@@ -21,6 +21,6 @@ namespace GrafanaEdnaApi.Models.Query
         public string Type { get; set; }
 
         [JsonProperty("data")]
-        public object ExtraData { get; set; }
+        public QueryTargetExtra ExtraData { get; set; } = new();
     }
 }
