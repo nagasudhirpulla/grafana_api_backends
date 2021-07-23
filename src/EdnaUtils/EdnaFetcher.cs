@@ -72,7 +72,11 @@ namespace EdnaUtils
                     nret = History.DnaGetNextHist(s, out dval, out timestamp, out status);
                     if (status != null)
                     {
-                        reslt.Add(new List<double> { dval, timestamp.ToUniversalTime().Subtract(Epoch).TotalMilliseconds });
+                        DateTime gmtTs = timestamp.ToUniversalTime();
+                        if (gmtTs > Epoch)
+                        {
+                            reslt.Add(new List<double> { dval, gmtTs.Subtract(Epoch).TotalMilliseconds });
+                        }
                     }
                 }
             }
