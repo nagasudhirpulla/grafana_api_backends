@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GrafanaEdnaApi.Models.Tags
+namespace GrafanaCore.Models.Tags
 {
     public class TagKeyResponse
     {

@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
-namespace GrafanaEdnaApi.Models.Query
+namespace GrafanaCore.Models.Query
 {
     public class QueryTargetExtra
     {

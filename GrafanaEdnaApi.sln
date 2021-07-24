@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrafanaCore", "src\GrafanaCore\GrafanaCore.csproj", "{7AC80BC0-5BBA-4CE7-9885-5ABC4F792B64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{A16238D5-124D-4806-8084-7ACBA744F3E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A16238D5-124D-4806-8084-7ACBA744F3E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A16238D5-124D-4806-8084-7ACBA744F3E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AC80BC0-5BBA-4CE7-9885-5ABC4F792B64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AC80BC0-5BBA-4CE7-9885-5ABC4F792B64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AC80BC0-5BBA-4CE7-9885-5ABC4F792B64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AC80BC0-5BBA-4CE7-9885-5ABC4F792B64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

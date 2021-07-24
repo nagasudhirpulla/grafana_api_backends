@@ -1,4 +1,4 @@
-﻿namespace GrafanaEdnaApi.Models.Tags
+﻿namespace GrafanaCore.Models.Tags
 {
     public class TagValueRequest
     {

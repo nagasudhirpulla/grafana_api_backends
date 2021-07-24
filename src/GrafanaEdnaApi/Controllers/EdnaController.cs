@@ -1,7 +1,7 @@
 ﻿using EdnaUtils;
-using GrafanaEdnaApi.Models.Query;
-using GrafanaEdnaApi.Models.Response;
-using GrafanaEdnaApi.Models.Tags;
+using GrafanaCore.Models.Query;
+using GrafanaCore.Models.Response;
+using GrafanaCore.Models.Tags;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -36,19 +36,19 @@ namespace GrafanaEdnaApi.Controllers
             foreach (QueryTarget trgt in query.Targets)
             {
                 string samplingType = trgt.Target;
-                
+
                 // derive extra data object
                 var dataObj = trgt.ExtraData;
-                
+
                 // derive series name
                 string pntName = dataObj.PntName ?? dataObj.Pnt ?? trgt.Target;
-                
+
                 // derive fetch shift
                 TimeSpan fetchShift = new(days: dataObj.FetchShiftDays, hours: dataObj.FetchShiftHrs, minutes: dataObj.FetchShiftMins, seconds: dataObj.FetchShiftSecs);
-                
+
                 // fetch data
                 var measData = _ednaFetcher.FetchHistData(dataObj.Pnt, query.Range.From, query.Range.To, samplingType, dataObj.SamplingPeriod, fetchShift, dataObj.FetchFuture);
-                
+
                 // add data to response
                 dataResponse.Add(new TargetResponse(pntName, measData));
             }

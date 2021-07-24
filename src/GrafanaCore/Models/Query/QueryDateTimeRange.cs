@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace GrafanaEdnaApi.Models.Query
+namespace GrafanaCore.Models.Query
 {
     [Serializable]
     [JsonObject(IsReference = false)]

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GrafanaEdnaApi.Models.Response
+namespace GrafanaCore.Models.Response
 {
     public class TargetResponse
     {

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
-namespace GrafanaEdnaApi.Models.Tags
+namespace GrafanaCore.Models.Tags
 {
     public class TagValueResponse
     {
