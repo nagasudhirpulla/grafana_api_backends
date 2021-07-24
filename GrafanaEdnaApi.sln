@@ -12,7 +12,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrafanaCore", "src\GrafanaCore\GrafanaCore.csproj", "{7AC80BC0-5BBA-4CE7-9885-5ABC4F792B64}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrafanaCore", "src\GrafanaCore\GrafanaCore.csproj", "{7AC80BC0-5BBA-4CE7-9885-5ABC4F792B64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrafanaPmuApi", "src\GrafanaPmuApi\GrafanaPmuApi.csproj", "{C7CDB4BF-1F69-4E01-9454-2F16CEFEDA51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PmuHistorianUtils", "src\PmuHistorianUtils\PmuHistorianUtils.csproj", "{81314672-C6D2-4D1C-B41B-C046225662B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +36,14 @@ Global
 		{7AC80BC0-5BBA-4CE7-9885-5ABC4F792B64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AC80BC0-5BBA-4CE7-9885-5ABC4F792B64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AC80BC0-5BBA-4CE7-9885-5ABC4F792B64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7CDB4BF-1F69-4E01-9454-2F16CEFEDA51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7CDB4BF-1F69-4E01-9454-2F16CEFEDA51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7CDB4BF-1F69-4E01-9454-2F16CEFEDA51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7CDB4BF-1F69-4E01-9454-2F16CEFEDA51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81314672-C6D2-4D1C-B41B-C046225662B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81314672-C6D2-4D1C-B41B-C046225662B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81314672-C6D2-4D1C-B41B-C046225662B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81314672-C6D2-4D1C-B41B-C046225662B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
