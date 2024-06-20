@@ -5,7 +5,7 @@ https://grafana.com/grafana/plugins/simpod-json-datasource/
 https://docs.microsoft.com/en-us/dotnet/core/deploying/#publish-self-contained
 
 ```
-dotnet publish -r win-x64 .\src\GrafanaEdnaApi\GrafanaEdnaApi.csproj
+dotnet publish --self-contained -r win-x64 .\src\GrafanaEdnaApi\GrafanaEdnaApi.csproj
 ```
 
 ### run dotnet server at custom port
