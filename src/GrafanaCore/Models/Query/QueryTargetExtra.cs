@@ -30,6 +30,9 @@ namespace GrafanaCore.Models.Query
         [JsonProperty("fetchFuture")]
         public bool FetchFuture { get; set; } = true;
 
+        [JsonProperty("onlyStatus")]
+        public bool OnlyStatus { get; set; } = false;
+
         // extra fields
         [JsonExtensionData]
         private IDictionary<string, JToken> _extraStuff;

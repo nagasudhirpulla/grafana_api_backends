@@ -18,7 +18,7 @@ namespace EdnaUtils
             _useRandom = configuration.GetValue<bool>("UseRandom");
         }
 
-        private static List<List<double>> FetchRandomHistData(DateTime startTime, DateTime endTime, int samplingPeriod, bool isFetchFuture)
+        private static List<List<double>> FetchRandomHistData(DateTime startTime, DateTime endTime, int samplingPeriod, bool isFetchFuture, bool onlyStatus)
         {
             List<List<double>> reslt = new();
             DateTime curTime = startTime;
@@ -31,17 +31,18 @@ namespace EdnaUtils
             }
             while (curTime <= targetEndTime)
             {
-                reslt.Add(new List<double>() { rand.Next(50, 100), curTime.Subtract(Epoch).TotalMilliseconds });
+                double val = onlyStatus ? rand.Next(0, 2) : rand.Next(50, 100);
+                reslt.Add([val, curTime.Subtract(Epoch).TotalMilliseconds]);
                 curTime += TimeSpan.FromSeconds(resFreq);
             }
             return reslt;
         }
 
-        public List<List<double>> FetchHistData(string pnt, DateTime startTime, DateTime endTime, string type, int samplingPeriod, TimeSpan fetchShift, bool isFetchFuture)
+        public List<List<double>> FetchHistData(string pnt, DateTime startTime, DateTime endTime, string type, int samplingPeriod, TimeSpan fetchShift, bool isFetchFuture, bool onlyStatus)
         {
             if (_useRandom)
             {
-                return FetchRandomHistData(startTime, endTime, samplingPeriod, isFetchFuture);
+                return FetchRandomHistData(startTime, endTime, samplingPeriod, isFetchFuture, onlyStatus);
             }
 
             List<List<double>> reslt = new();
@@ -63,6 +64,7 @@ namespace EdnaUtils
                 double dval = 0;
                 DateTime timestamp = DateTime.Now;
                 string status = "";
+                ushort statusCode = 0;
                 TimeSpan period = TimeSpan.FromSeconds(resFreq);
                 int nret = 0;
                 if (type == "raw")
@@ -78,13 +80,28 @@ namespace EdnaUtils
 
                 while (nret == 0)
                 {
-                    nret = History.DnaGetNextHist(s, out dval, out timestamp, out status);
-                    if (status != null)
+                    if (onlyStatus)
                     {
-                        DateTime gmtTs = (timestamp - fetchShift).ToUniversalTime();
-                        if (gmtTs > Epoch)
+                        nret = History.DnaGetNextHistFull(s, out dval, out timestamp, out statusCode, out status);
+                        if (status != null)
                         {
-                            reslt.Add(new List<double> { dval, gmtTs.Subtract(Epoch).TotalMilliseconds });
+                            DateTime gmtTs = (timestamp - fetchShift).ToUniversalTime();
+                            if (gmtTs > Epoch)
+                            {
+                                reslt.Add(new List<double> { statusCode, gmtTs.Subtract(Epoch).TotalMilliseconds });
+                            }
+                        }
+                    }
+                    else
+                    {
+                        nret = History.DnaGetNextHist(s, out dval, out timestamp, out status);
+                        if (status != null)
+                        {
+                            DateTime gmtTs = (timestamp - fetchShift).ToUniversalTime();
+                            if (gmtTs > Epoch)
+                            {
+                                reslt.Add(new List<double> { dval, gmtTs.Subtract(Epoch).TotalMilliseconds });
+                            }
                         }
                     }
                 }

@@ -47,7 +47,7 @@ namespace GrafanaEdnaApi.Controllers
                 TimeSpan fetchShift = new(days: dataObj.FetchShiftDays, hours: dataObj.FetchShiftHrs, minutes: dataObj.FetchShiftMins, seconds: dataObj.FetchShiftSecs);
 
                 // fetch data
-                var measData = _ednaFetcher.FetchHistData(dataObj.Pnt, query.Range.From, query.Range.To, samplingType, dataObj.SamplingPeriod, fetchShift, dataObj.FetchFuture);
+                var measData = _ednaFetcher.FetchHistData(dataObj.Pnt, query.Range.From, query.Range.To, samplingType, dataObj.SamplingPeriod, fetchShift, dataObj.FetchFuture, dataObj.OnlyStatus);
 
                 // add data to response
                 dataResponse.Add(new TargetResponse(pntName, measData));
