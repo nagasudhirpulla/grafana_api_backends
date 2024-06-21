@@ -11,11 +11,13 @@ namespace EdnaUtils
         private static readonly DateTime Epoch = new(1970, 1, 1, 0, 0, 0, 0);
         private readonly ILogger<EdnaFetcher> _logger;
         private readonly bool _useRandom;
+        private readonly Dictionary<string, double> _statusCodesLookup;
 
         public EdnaFetcher(ILogger<EdnaFetcher> logger, IConfiguration configuration)
         {
             _logger = logger;
             _useRandom = configuration.GetValue<bool>("UseRandom");
+            _statusCodesLookup = configuration.GetSection("StatusCodes").Get<Dictionary<string, double>>();
         }
 
         private static List<List<double>> FetchRandomHistData(DateTime startTime, DateTime endTime, int samplingPeriod, bool isFetchFuture, bool onlyStatus)
@@ -64,7 +66,6 @@ namespace EdnaUtils
                 double dval = 0;
                 DateTime timestamp = DateTime.Now;
                 string status = "";
-                ushort statusCode = 0;
                 TimeSpan period = TimeSpan.FromSeconds(resFreq);
                 int nret = 0;
                 if (type == "raw")
@@ -80,28 +81,15 @@ namespace EdnaUtils
 
                 while (nret == 0)
                 {
-                    if (onlyStatus)
+
+                    nret = History.DnaGetNextHist(s, out dval, out timestamp, out status);
+                    if (status != null)
                     {
-                        nret = History.DnaGetNextHistFull(s, out dval, out timestamp, out statusCode, out status);
-                        if (status != null)
+                        DateTime gmtTs = (timestamp - fetchShift).ToUniversalTime();
+                        if (gmtTs > Epoch)
                         {
-                            DateTime gmtTs = (timestamp - fetchShift).ToUniversalTime();
-                            if (gmtTs > Epoch)
-                            {
-                                reslt.Add(new List<double> { statusCode, gmtTs.Subtract(Epoch).TotalMilliseconds });
-                            }
-                        }
-                    }
-                    else
-                    {
-                        nret = History.DnaGetNextHist(s, out dval, out timestamp, out status);
-                        if (status != null)
-                        {
-                            DateTime gmtTs = (timestamp - fetchShift).ToUniversalTime();
-                            if (gmtTs > Epoch)
-                            {
-                                reslt.Add(new List<double> { dval, gmtTs.Subtract(Epoch).TotalMilliseconds });
-                            }
+                            double val = onlyStatus ? StatusMapping(status) : dval;
+                            reslt.Add([dval, gmtTs.Subtract(Epoch).TotalMilliseconds]);
                         }
                     }
                 }
@@ -111,6 +99,16 @@ namespace EdnaUtils
                 _logger.LogError("Error while fetching history results " + ex.Message);
             }
             return reslt;
+        }
+
+        public double StatusMapping(string statusStr)
+        {
+            double statusVal = 0;
+            if (_statusCodesLookup.TryGetValue(statusStr, out double value))
+            {
+                statusVal = value;
+            }
+            return statusVal;
         }
     }
 }
