@@ -89,7 +89,7 @@ namespace EdnaUtils
                         if (gmtTs > Epoch)
                         {
                             double val = onlyStatus ? StatusMapping(status) : dval;
-                            reslt.Add([dval, gmtTs.Subtract(Epoch).TotalMilliseconds]);
+                            reslt.Add([val, gmtTs.Subtract(Epoch).TotalMilliseconds]);
                         }
                     }
                 }
